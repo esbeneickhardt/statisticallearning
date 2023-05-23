@@ -1,7 +1,7 @@
 ---
 title: 'Chapter 2: What is Statistical Learning?'
 author: "Esben Eickhardt"
-date: "2023-05-10"
+date: "2023-05-23"
 output: pdf_document
 ---
 
@@ -170,30 +170,41 @@ When using KNN the choice of K has a drastic eﬀect on the KNN classifier that 
 # Chapter Exercises & Answers
 As most exercises are redundant for my brush up on statistical methods, I will only be solving select exercises. Great answers by Liam Morgan to all of the exercises can be found at [RPubs](https://rpubs.com/lmorgan95/ISLR_CH2_Solutions).
 
+## College Data
+In this exercise we run through the **College** data set, and play a bit around with the data. For this purpose I will be using **ggplot2** rather than the native R package.
 
+```{r, warning=FALSE, message=FALSE}
+# Loading libraries
+library(ISLR)
+library(tidyverse)
 
+# Loading data
+college <- ISLR::College
+```
 
+We start out by looking at the different variables and plotting them against each other.
 
+```{r}
+# Getting an overview of the variables
+summary(college[,1:5])
+```
+Plotting some of the variables against each other.
 
+```{r}
+# Plotting first five variables against each other
+pairs(college[,1:5])
+```
+We add a variable to indicate whether the university is elite or not. We call a university elite if more than 50 % of the university's students come from the top 10 % of their high schools.
 
+```{r}
+# Adding elite column
+college$Elite <- factor(ifelse(college$Top10perc > 50, 'Yes', 'No'))
+```
 
+We now explore whether there is a correlation between tuition and elite-status in box plots.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```{r}
+# Comparing Elite to Outstate
+ggplot(college, aes(Elite, Outstate)) + 
+  geom_boxplot()
+```
