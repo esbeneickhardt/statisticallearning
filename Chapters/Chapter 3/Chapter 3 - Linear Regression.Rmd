@@ -13,7 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In this chapter we focus on *linear regressions*, how they work and what kind of problems they can solve.
 
-# What Questions Can We Answer?
+All the same things can also be learned by following the following [Statquest playlist](https://www.youtube.com/watch?v=PaFPbb66DxQ&list=PLblh5JKOoLUIzaEkCLIUxQFjPIlapw8nU&index=1).
+
+# What Questions can we Answer with Linar Regressions?
 
 Suppose we have a data set with sales as well as budgets for various types of advertisement, what kind of questions would we be able to answer:
 
@@ -35,17 +37,25 @@ This could e.g. be a relationship between a TV-advertisement budget and sales, w
 
 $Sales = \beta_0 + \beta_1*TV$ 
 
+## 1.1 Aim
+
+
+
 ## 1.1 Estimating the Coefficients
 
-To estimate the coefficients we use data. That is, we use observations pairs of TV-advertisement and Sales. Our aim is to find the two *coefficients* that result in the lowest total difference between the actual sales and the predicted sales. Despite this aim most models instead attempt to minimize the mean squared error (MSE), as it has better mathematical properties than the mean absolute error (MAE). The difference between a prediction and the actual value is referred to as the *residual*, and the residuals can be seen in **Figure 1** as grey lines. 
+Our aim is to fit a linear line through the data that minimizes the distances between the predicted values and the actual values. To estimate the *coefficients* for such a line we use data. 
+
+The distances between a predicted values and an actual value is called a *residual*, and *residuals* for all the data points can be seen in **Figure 1** as grey lines.
+
+A residual is calculated as the difference between the actual value and the predicted value in the following way:
+
+$e = y_i-\hat{y}_i$
 
 <center>
 ![Linear Model for TV vs Sales](Images/Linear Model for TV vs Sales.png){width=80%}
 </center>
 
-A residual is calculated as the difference between the actual value and the predicted value:
-
-$e = y_i-\hat{y}_i$
+Despite the aim of minimizing the absolute distances between the predicted and the actual values in practice we instead minimizes the *Residual Sum of Squares (RSS)*, as it is more mathematical well-behaved than absolute values.  
 
 The *residual sum of squares (RSS)* is calculated as:
 
@@ -57,7 +67,7 @@ The two *coefficients*, $\beta_0$ and $\beta_1$, can be minimized with the follo
 $\beta_1=\frac{\sum_{i=1}^n(x_i-\overline{x})(y_i-\overline{y})}{\sum_{i=1}^n(x_i-\overline{x})}$  
 $\beta_0=\overline{y}-\beta_1\overline{x}$
 
-In **Figure 2** you can see the calculated RSS for different $\beta_0$ and $\beta_1$ values used on the advertisement dataset. The red dot marks the minimum RSS.
+In **Figure 2** you can see the calculated RSS for different $\beta_0$ and $\beta_1$ values used on the advertisement dataset. The red dot marks the minimum RSS. The minimum can be found by differentiating the RSS model, and finding finding where it is equal to zero.
 
 <center>
 ![Minimizing RSS](Images/Minimizing RSS.png){width=40%}
@@ -105,24 +115,42 @@ $t = \frac{\hat{\beta_1-0}}{SE(\hat{\beta_1)}}$
 
 ## 1.3 Assessing the Accuracy of the Model
 
-Here we want to quantify *the extent to which the model fits the data*. This is usually assessed using the two quantities:
+We want to quantify *the extent to which the model fits the data*. This is usually assessed using the two quantities:
 
-* Residual standard error (RSE)
 * $R^2$ Statistics
+* Residual standard error (RSE)
 
-The RSE is the average amount that the response will deviate from the true regression line. The formular uses a *magic number*, 2, to account for the error in small data sets.
+### 1.3.1 $R^2$
+
+$R^2$ is a measure of the *proportion of variance explained*. It is calculated in three steps: 
+
+1. Run a line through the mean, and calculate the *total sum of squares (TSS)*: $TSS=\sum{(y_i-\overline{y})^2}$. 
+2. Calculate the *residual sum of squares (RSS)* for your model: $RSS=\sum{(y_i-\hat{y}_i)^2}$. 
+3. Now we can calculate the proportion of the *variance that is explained by the model*: $R^2=\frac{TSS-RSS}{TSS}$.
+  * Note that sometimes the formula includes all values divided by *n* as TSS/n is the *variance*, but during division *n* disappears, which is why we don't include it in the calculation here.  
+
+If a model fits the data perfectly the $R^2$ is 1. It should be noted that as more parameters are added to a model the closer $R^2$ will get to 1.
+
+If a model is only built from two values $R^2$ will always be equal to one. So $R^2$ is not perfect, and we need a *p-value* to assess our confidence in $R^2$, which is done using the *F-statistic*. *F* is calculated in the following way:
+
+$F = \frac{Variation\ in\ Y\ explained\ by\ X_1}{Variation\ in\ Y\ not\ explained\ by\ X_1} <=>$
+$F = \frac{TSS-RSS/(p_{fit}-p_{mean})}{RSS(n-p_{fit})}$
+
+Here $p_{fit}$ is the number of parameters in the model (y-intercept + slope), $p_{mean}$ is the number of parameters in the mean line (y-intercepts) and *n* is the number of samples.
+
+To estimate the *p-value* we calculate *F* for a bunch of random data sets (with similar variance and range), and get a *F-distribution*. Now we can calculate how many percent of the values in the *F-distribution* are equal or higher than the *F-value* we calculated for our model. This percentage is the *p-value*.
+
+### 1.3.2 Residual Squared Error
+
+The RSE is the average amount that the response will deviate from the true regression line. The formula uses a *magic number*, 2, to account for the error in small data sets.
 
 $RSE = \sqrt{\frac{1}{n-2}RSS}$
 
 We can calculate the percentage error by comparing the error if we had just predicted the mean value of *y* for all data points to the RSE. The *RSE/MeanError* tells us the percentage error.
 
-$R^2$ provides an absolute measure of the lack of fit of the model, and is a number in the range from 0-1. It is a measure of the *proportion of variance explained*. 
-
-$R^2=\frac{TSS-RSS}{TSS}$
-
-If a model fits the data perfectly *RSS* would be zero, and thus 100 % ($R^2$) of the variance would be explained by the model. TSS is the *total sum of squares*, which is $TSS=\sum{(y_i-\overline{y})}$. TSS is thus the *sum of squares* for a model that is simply a straight line/hyperplane through the mean of the data.
-
 # 2. Multiple Linear Regression
+
+https://www.youtube.com/watch?v=zITIFTsivN8&list=PLblh5JKOoLUIzaEkCLIUxQFjPIlapw8nU&index=4
 
 I practice we have more than one predictor, thus here we extend the *linear regression* to multiple variables. 
 
@@ -195,6 +223,63 @@ As with a *simple linear model* we again use RSE and $R^2$. One should, however,
 
 ## 2.5 Given a set of predictor values, what response value should we predict, and how accurate is our prediction?
 
+# 3. Chapter Exercises & Answers
+As most exercises are redundant for my brush up on statistical methods, I will only be solving select exercises. Great answers by Liam Morgan to all of the exercises can be found at [RPubs](https://rpubs.com/lmorgan95/ISLR_CH3_Solutions).
+
+## 3.1 Simple Linear Models
+
+Here we will just build a simple linear model and examine its different statistics. First we create some data.
+
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Libraries
+library(tidyverse)
+
+# Creating some data
+mouse.data <- data.frame(
+  weight = c(0.9, 1.8, 2.4, 3.5, 3.9, 4.4, 5.1, 5.6, 6.3),
+  size = c(1.4, 2.6, 1.0, 3.7, 5.5, 3.2, 3.0, 4.9, 6.3)
+)
+
+# Plotting data
+ggplot(mouse.data, aes(weight, size)) +
+  geom_point() +
+  theme_bw()
+```
+We create a simple linear model.
+
+```{r, message=FALSE, warning=FALSE}
+# Fitting a linear model
+mouse.regression <- lm(size ~ weight, data=mouse.data)
+
+# Summarizing model
+summary(mouse.regression)
+```
+Here we go over the summary of the model:
+
+* Call: It is just the model call
+* Residuals: The distribution of the residuals
+  * You would like the distribution to be symmetric around zero
+* Coefficients:
+  * Intercept: The estimated intercept with the y-axis
+    * Standard Error and t-values are used to calculate the p-value
+    * p-value is an estimate of whether the value is zero or not
+  * Weight: The estimated slope of the linear line
+    * Standard Error and t-values are used to calculate the p-value
+    * p-value is an estimate of whether the value is zero or not
+* Residual Standard Error: Square root of the denominator for *F*
+* Multiple R-squared: R-squared as described earlier
+* Adjusted R-squared: R-squared scaled by the number of parameters
+* F-statistic: Tells is if R-squared is significant or not
+
+Finally we add the regression line to our plot
+
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Plotting regression line
+ggplot(mouse.data, aes(weight, size)) +
+  geom_point() +
+  geom_smooth(method = "lm",se = F) +
+  theme_bw()
+```
 
 
 
