@@ -1,7 +1,7 @@
 ---
 title: 'Chapter 3: Linear Regression'
 author: "Esben Eickhardt"
-date: "2023-05-23"
+date: "2023-06-02"
 output: pdf_document
 ---
 
@@ -36,10 +36,6 @@ $Y = \beta_0 + \beta_1X$
 This could e.g. be a relationship between a TV-advertisement budget and sales, where $\beta_0$ and $\beta_1$ are two unknown *coefficients* that represent the *intercept* with the y-axis and the *slope* of the line.
 
 $Sales = \beta_0 + \beta_1*TV$ 
-
-## 1.1 Aim
-
-
 
 ## 1.1 Estimating the Coefficients
 
@@ -150,9 +146,7 @@ We can calculate the percentage error by comparing the error if we had just pred
 
 # 2. Multiple Linear Regression
 
-https://www.youtube.com/watch?v=zITIFTsivN8&list=PLblh5JKOoLUIzaEkCLIUxQFjPIlapw8nU&index=4
-
-I practice we have more than one predictor, thus here we extend the *linear regression* to multiple variables. 
+I practice we have more than one predictor, thus here we extend the *simple regression* to multiple variables. 
 
 $Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + ...+\beta_pX_p+\epsilon$
 
@@ -219,9 +213,16 @@ It is, however, usually practically impossible to make all $2^p$ models, so inst
 
 ## 2.4 How well does the model fit the data?
 
-As with a *simple linear model* we again use RSE and $R^2$. One should, however, be aware that as the number of predictors increases the $R^2$ always increases!
+As with a *simple linear model* we again use RSE and $R^2$. One should, however, be aware that as the number of predictors increases the $R^2$ always increases! That is why one should look at the adjusted $R^2$ as it takes the extra parameters into account.
 
 ## 2.5 Given a set of predictor values, what response value should we predict, and how accurate is our prediction?
+
+### CONTINUE HERE ###
+### BOOK PAGE 82 ###
+
+
+
+
 
 # 3. Chapter Exercises & Answers
 As most exercises are redundant for my brush up on statistical methods, I will only be solving select exercises. Great answers by Liam Morgan to all of the exercises can be found at [RPubs](https://rpubs.com/lmorgan95/ISLR_CH3_Solutions).
@@ -245,6 +246,7 @@ ggplot(mouse.data, aes(weight, size)) +
   geom_point() +
   theme_bw()
 ```
+
 We create a simple linear model.
 
 ```{r, message=FALSE, warning=FALSE}
@@ -281,10 +283,35 @@ ggplot(mouse.data, aes(weight, size)) +
   theme_bw()
 ```
 
+## 3.1 Multiple Regression
 
+Here we build a multiple regression model and examine its different statistics. First we create some data.
 
+```{r}
+# Creating some data
+mouse.data <- data.frame(
+  weight = c(0.9, 1.8, 2.4, 3.5, 3.9, 4.4, 5.1, 5.6, 6.3),
+  size = c(1.4, 2.6, 1.0, 3.7, 5.5, 3.2, 3.0, 4.9, 6.3),
+  tail = c(0.7, 1.3, 0.7, 2.0, 3.6, 3.0, 2.9, 3.9, 4.0)
+)
 
+# Plotting the data
+plot(mouse.data)
+```
+In the plots we can see that both weight and tail are correlated with size, which is what we want, but we also see that they are correlated with each other. This may mean that a model with either tail or weight will be sufficient.
 
+We create a multiple regression model.
+
+```{r}
+# Fitting a plane to the data
+mouse.regression <- lm(size ~ weight + tail, data=mouse.data)
+
+# Summarizing model
+summary(mouse.regression)
+```
+As we are running multiple regression we are more interested in the *Adjusted $R^2$*, as it takes the extra parameter into account. We can see that the *p-value* for the weight is no longer significant. 
+
+When looking at the statistics for the coefficients they are based on a comparison between a model with the variable and without it. The p-value of 0.4345 means that a model that uses the weight and tail variables is not significantly better than one using just the tail variable.
 
 
 
