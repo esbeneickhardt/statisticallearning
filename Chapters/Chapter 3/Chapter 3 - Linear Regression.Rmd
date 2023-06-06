@@ -217,14 +217,52 @@ As with a *simple linear model* we again use RSE and $R^2$. One should, however,
 
 ## 2.5 Given a set of predictor values, what response value should we predict, and how accurate is our prediction?
 
-### CONTINUE HERE ###
-### BOOK PAGE 82 ###
+Inaccuracies in the coefficient estimates can be computed using a *confidence interval*
+Inaccuracies in the Y estimates can be computed using a *prediction interval*.
+
+# 3. Interactions
+Linear models make several highly restrictive assumptions that are often violated in practice. Two of the most important assumptions state that the relationship between the predictors and response are additive and linear. Here we remove the *additive* assumption by adding an *interaction* term to the model.
+
+$Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_1X_2 + \epsilon <=>$
+$Y = \beta_0 + (\beta_1 + \beta_3X_2)X_1 + \beta_2X_2 + \epsilon$
+
+This can be interpreted as if adding one unit of $X_1$ then $Y$ will increase by $\beta_1 + \beta_3X_2$ units. 
+
+NOTE: The hierarchical principle states that if we include an interaction in a model, we hierarchical should also include the main eﬀects, even if the p-values associated with principle their coeﬃcients are not significant.
+
+4. Non-Linear Relationships
+Here we present a very simple way to directly extend the linear model
+to accommodate non-linear relationships, using *polynomial regression*. NOTE: It is still a *linear model*!
+
+$Y = \beta_0 + \beta_1X_1 + \beta_2X_1^2 + \epsilon$
+
+5. Common Problems with Linear Models
+Here we go over the most common problems when fitting linear models to data:
+
+5.1 Non-Linearity of the Data
+If plotting the residuals against the fitted/predicted values it is possible pick up non-linearities as show in the figure. You would expect the errors to be equally distributed around zero for all Y-values if the model fits the data well.
+
+<center>
+![Residual Plot](Images/Residual Plot.png){width=80%}
+</center>
+
+Ways to adress the issue is to make non-linear transformations to the data (log X, $\sqrt{X}$, $X^2$).
+
+5.2 Correlation of Error Terms
+An important assumption of the linear regression model is that the error
+terms, $\epsilon_1$, $\epsilon_2$ , . . . , $\epsilon_n$, are uncorrelated. If they are correlated: 
+
+* The estimated *standard errors* of the *regression coefficients* will be underestimated.
+* Confidence and prediction intervals will be too narrow
+* p-values will be too low
+
+The problem is best understood with the example where we accidentally double our data, which would result in a narrowing our our confidence interval by a factor of $\sqrt{2}$. The problem is most often seen in time series where observations that are obtained at adjacent time points will have positively correlated errors. The problem can be identified by plotting the residuals as a function of time, and be seen if adjacent data points have similar residuals (this is called *tracking*).
+
+##### CONTINUE HERE #####
 
 
 
-
-
-# 3. Chapter Exercises & Answers
+# X. Chapter Exercises & Answers
 As most exercises are redundant for my brush up on statistical methods, I will only be solving select exercises. Great answers by Liam Morgan to all of the exercises can be found at [RPubs](https://rpubs.com/lmorgan95/ISLR_CH3_Solutions).
 
 ## 3.1 Simple Linear Models
