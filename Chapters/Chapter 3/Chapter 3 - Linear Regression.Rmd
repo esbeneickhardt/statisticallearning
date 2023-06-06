@@ -258,6 +258,23 @@ terms, $\epsilon_1$, $\epsilon_2$ , . . . , $\epsilon_n$, are uncorrelated. If t
 
 The problem is best understood with the example where we accidentally double our data, which would result in a narrowing our our confidence interval by a factor of $\sqrt{2}$. The problem is most often seen in time series where observations that are obtained at adjacent time points will have positively correlated errors. The problem can be identified by plotting the residuals as a function of time, and be seen if adjacent data points have similar residuals (this is called *tracking*).
 
+This problem can mainly be mitigated by making a good *experimental design*.
+
+5.3 Non-constant Variance of Error Terms
+Another important assumption of the linear regression model is that the
+error terms have a constant variance, $Var(\epsilon_i)=\sigma^2$. The standard errors, confidence intervals, and hypothesis tests associated with the linear model rely upon this assumption.
+
+The most common case of this is seen where the variance of the error terms increase as the value increases, this is also called *heteroscedasticity*. A example can be seen in the figure.
+
+<center>
+![Heteroscedasticity](Images/Heteroscedasticity.png){width=80%}
+</center>
+
+One of the most usual ways to fix this problem is to $logY$ or $\sqrt{Y}$. Another way is to use *weighted least squares*.
+
+5.4 Outliers
+An *outlier* is a point for which $y_i$ is far from the $y$ predicted by the model. 
+
 ##### CONTINUE HERE #####
 
 
