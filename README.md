@@ -5,4 +5,4 @@ I refresh my statistics I am re-reading [An Introduction to Statistical Learning
 The code is divided into chapters, and is written in Rmd such that the notes and figures can also be added.
 
 # Current Progress
-Page 81
+Page 96
