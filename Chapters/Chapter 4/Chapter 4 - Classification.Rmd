@@ -1,0 +1,16 @@
+---
+title: 'Chapter 4: Classification'
+author: "Esben Eickhardt"
+date: "2023-06-20"
+output: pdf_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+In this chapter we focus on *classfication*.
+
+All the same things can also be learned by following the following [Statquest playlist](https://www.youtube.com/watch?v=PaFPbb66DxQ&list=PLblh5JKOoLUIzaEkCLIUxQFjPIlapw8nU&index=1).

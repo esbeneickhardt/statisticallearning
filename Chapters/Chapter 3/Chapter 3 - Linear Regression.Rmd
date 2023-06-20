@@ -1,7 +1,7 @@
 ---
 title: 'Chapter 3: Linear Regression'
 author: "Esben Eickhardt"
-date: "2023-06-02"
+date: "2023-06-20"
 output: pdf_document
 ---
 
@@ -348,7 +348,7 @@ KNN Cons:
 # 8. Chapter Exercises & Answers
 As most exercises are redundant for my brush up on statistical methods, I will only be solving select exercises. Great answers by Liam Morgan to all of the exercises can be found at [RPubs](https://rpubs.com/lmorgan95/ISLR_CH3_Solutions).
 
-## 3.1 Simple Linear Models
+## 8.1 Simple Linear Models
 
 Here we will just build a simple linear model and examine its different statistics. First we create some data.
 
@@ -394,6 +394,13 @@ Here we go over the summary of the model:
 * Adjusted R-squared: R-squared scaled by the number of parameters
 * F-statistic: Tells is if R-squared is significant or not
 
+```{r}
+# Making predictions with confidence intervals
+predict(mouse.regression, 
+        data.frame(weight = c(2,4,6)),
+        interval = "prediction")
+```
+
 Finally we add the regression line to our plot
 
 ```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
@@ -404,7 +411,7 @@ ggplot(mouse.data, aes(weight, size)) +
   theme_bw()
 ```
 
-## 3.1 Multiple Regression
+## 8.2 Multiple Regression
 
 Here we build a multiple regression model and examine its different statistics. First we create some data.
 
@@ -434,20 +441,138 @@ As we are running multiple regression we are more interested in the *Adjusted $R
 
 When looking at the statistics for the coefficients they are based on a comparison between a model with the variable and without it. The p-value of 0.4345 means that a model that uses the weight and tail variables is not significantly better than one using just the tail variable.
 
+# 8.3 The Boston Dataset
+Here we start simple and go deeper and deeper on the **Boston** dataset.
 
+## 8.3.1 Fitting a simple model
 
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Loading Data
+library(ISLR2)
+library(car)
 
+# Plotting data
+ggplot(Boston, aes(medv, lstat)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F)
 
+# Linear model
+boston.lr <- lm(medv ~ lstat, data = Boston)
+```
 
+Now we will look at some diagnostics plots.
 
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Extract model information for plotting
+data <- fortify(boston.lr)
 
+# Residuals vs. Fitted plot
+ggplot(data, aes(.fitted, .resid)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  xlab("Fitted values") +
+  ylab("Residuals") +
+  ggtitle("Residuals vs. Fitted")
+```
+We can see that the data points are not evenly distributed above and below the line indicating that the data has a non-linear relationship.
 
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Normal Q-Q plot
+ggplot(data, aes(sample = .stdresid)) +
+  stat_qq() +
+  stat_qq_line() +
+  xlab("Theoretical Quantiles") +
+  ylab("Standardized Residuals") +
+  ggtitle("Normal Q-Q")
+```
+We can see that the residuals are not normally distributed though one would assume that.
 
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Scale-Location plot
+ggplot(data, aes(.fitted, sqrt(abs(.stdresid)))) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  xlab("Fitted values") +
+  ylab("sqrt(|Standardized Residuals|)") +
+  ggtitle("Scale-Location")
+```
+Also known as the spread-location plot, it helps evaluate if the residuals have a constant variance (homoscedasticity). It plots the absolute values of the square root of the standardized residuals against the fitted values. We see a clear trend in the standardized residuals.
 
+```{r, message=FALSE, warning=FALSE, fig.width = 5, fig.asp = .62,  fig.align = "center"}
+# Residuals vs. Leverage plot
+ggplot(data, aes(.hat, .stdresid)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  xlab("Leverage") +
+  ylab("Standardized Residuals") +
+  ggtitle("Residuals vs. Leverage")
+```
+This plot helps identify influential observations that have a large impact on the regression results. It displays the standardized residuals against the leverage, which measures how much an observation affects the model's fit.
 
+## 8.3.2 Fitting a multiple regression model
+Now it is time to include some more variables!
 
+```{r}
+# Fitting the model
+boston.mr <- lm(medv ~ ., data = Boston)
 
+# Summarizing statistics
+summary(boston.mr)
+```
+To assess the colliniarity next we calculate the *variance inflation
+factors*.
 
+```{r}
+# Calculating VIFs
+vif(boston.mr)
+```
+
+VIFs help quantify the extent of multicollinearity by measuring how much the variance of an estimated regression coefficient is inflated due to the presence of correlated predictors.
+
+The VIF for a particular predictor variable is calculated as follows:
+
+1. Fit a regression model using the predictor variable of interest as the response variable and the remaining predictor variables as the predictors.
+2. Calculate the R-squared value of this regression model.
+3. Calculate the VIF as the reciprocal of (1 - R-squared).
+
+The interpretation of VIF values is as follows:
+
+1. A VIF of 1 indicates no correlation between the predictor variable and the other predictors. There is no multicollinearity issue.
+2. A VIF greater than 1 and less than 5 suggests moderate correlation among the predictors. It is generally considered acceptable.
+3. A VIF greater than 5 indicates high correlation between the predictor variable and the other predictors, indicating significant multicollinearity.
+
+## 8.3.3 Adding the interaction term
+
+```{r}
+# Adding an interaction term
+summary(lm(medv ~ lstat * age, data = Boston))
+```
+
+## 8.3.4 Going Non-Linear
+Here we make a model with and without a non-linearity.
+
+```{r}
+# Model
+model.linear <- lm(medv ~ lstat, data=Boston)
+
+# Model with non-linearity
+model.nonlinear <- lm(medv ~ lstat + I(lstat^2), data=Boston)
+```
+
+We can compare the two models using ANOVA. The null hypothesis is that the two models fit the data equally well, and the alternative hypothesis is that the full model is superior.
+
+```{r}
+# Testing if the model with non-linearity fits better
+anova(model.linear, model.nonlinear)
+```
+The F-statistic is 135, and the p-value is very low, thus the null hypothesis is rejected. Let try to plot the new line.
+
+```{r}
+# Plotting data
+ggplot(Boston, aes(medv, lstat)) +
+  geom_point() +
+  geom_smooth(method='lm', formula= y~x + I(x^2))
+```
 
 
 
